@@ -109,6 +109,9 @@ class _MyAppState extends State<MyApp> {
           debugPrint(
               '[onExtensionError] provider: $provider, extension: $extension, error: $error, message: $message');
         },
+        onError: (err, msg) {
+          debugPrint('[onError] err: $err, msg: $msg');
+        },
       ),
     );
     print("步骤 1：启用插件");
