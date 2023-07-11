@@ -93,6 +93,22 @@ class _MyAppState extends State<MyApp> {
             _remoteUid = null;
           });
         },
+        // 添加事件监听
+        onExtensionEvent: (provider, extension, key, value) {
+          debugPrint(
+              '[onExtensionEvent] provider: $provider, extension: $extension, key: $key, value: $value');
+        },
+        onExtensionStarted: (provider, extension) {
+          debugPrint(
+              '[onExtensionStarted] provider: $provider, extension: $extension');
+          if (provider == 'FaceUnity' && extension == 'Effect') {
+            _initFUExtension();
+          }
+        },
+        onExtensionError: (provider, extension, error, message) {
+          debugPrint(
+              '[onExtensionError] provider: $provider, extension: $extension, error: $error, message: $message');
+        },
       ),
     );
     print("步骤 1：启用插件");
