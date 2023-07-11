@@ -33,7 +33,6 @@ class MyApp extends StatefulWidget {
 
 // 应用状态类
 class _MyAppState extends State<MyApp> {
-  late final RtcEngineEventHandler _rtcEngineEventHandler;
   int? _remoteUid;
   bool _localUserJoined = false;
   late RtcEngine _engine;
@@ -143,69 +142,6 @@ class _MyAppState extends State<MyApp> {
         key: 'fuLoadAIModelFromPackage',
         // 通过 type 参数设置 AI 能力类型为 FUAITYPE_FACEPROCESSOR，对应取值为 1 << 8
         value: jsonEncode({'data': aiFaceProcessorPath, 'type': 1 << 8}));
-
-    // // 监听插件事件
-    // _rtcEngineEventHandler = RtcEngineEventHandler(
-    //   onExtensionEvent: (provider, extension, key, value) {
-    //     debugPrint(
-    //         '[onExtensionEvent] provider: $provider, extension: $extension, key: $key, value: $value');
-    //     if (provider == 'FaceUnity' && extension == 'Effect') {
-    //       try {
-    //         final jsonObject = jsonDecode(value);
-    //         if (key == 'fuIsTracking') {
-    //           final faces = jsonObject['faces'] as int?;
-    //           if (faces != null) {
-    //             // 处理正在跟踪的人脸数量
-    //             print('正在跟踪的人脸数量: $faces');
-    //           }
-    //         } else if (key == 'fuHandDetectorGetResultNumHands') {
-    //           final hands = jsonObject['hands'] as int?;
-    //           if (hands != null) {
-    //             // 处理手势数量
-    //             print('手势数量: $hands');
-    //           }
-    //         } else if (key == 'fuHumanProcessorGetNumResults') {
-    //           final people = jsonObject['people'] as int?;
-    //           if (people != null) {
-    //             // 处理人体数量
-    //             print('人体数量: $people');
-    //           }
-    //         }
-    //       } catch (e) {
-    //         print(e);
-    //       }
-    //     }
-    //   },
-    //   onExtensionStarted: (provider, extension) {
-    //     debugPrint(
-    //         '[onExtensionStarted] provider: $provider, extension: $extension');
-    //   },
-    //   onExtensionError: (provider, extension, error, message) {
-    //     debugPrint(
-    //         '[onExtensionError] provider: $provider, extension: $extension, error: $error, message: $message');
-    //   },
-    // );
-    // _engine.registerEventHandler(_rtcEngineEventHandler);
-
-    // void setExtensionJsonObject(String key, Map<String, dynamic> properties) {
-    //   final jsonObject = jsonEncode(properties);
-    //   _engine.setExtensionProperty(
-    //     provider: 'FaceUnity',
-    //     extension: 'Effect',
-    //     key: key,
-    //     value: jsonObject,
-    //   );
-    // }
-
-    // Map<String, dynamic> map = {"enable": true};
-    // setExtensionJsonObject("fuIsTracking", map);
-    // // 注册回调函数
-    // await _engine.setExtensionProperty(
-    //   provider: 'FaceUnity',
-    //   extension: 'Effect',
-    //   key: 'fuIsTracking',
-    //   value: 'faces',
-    // );
   }
 
 // 步骤-3：设置美颜效果和人体识别
