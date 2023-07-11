@@ -1,9 +1,11 @@
 /// Paste your authpack data here, e.g.,
 /// List<int> gAuthPackage = [10, 13, -98, -100, 126, ...];
 import 'dart:convert';
+import 'dart:math';
 import 'package:crypto/crypto.dart';
 
-List<int> gAuthPackage = [];
+List<int> gAuthPackage = authpack.A();
+// List<int> gAuthPackage = [];
 
 class authpack {
   static int sha1_32(List<int> buf) {

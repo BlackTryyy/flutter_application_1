@@ -20,7 +20,7 @@ void main() {
 // 定义 App ID、Token 和 Channel
 const appId = "ac3401dfe04046fdbc80588720e33995";
 const token =
-    "007eJxTYNBYNfHYfNm0tUcLrob73xDfn/hS38JMyuGb/vKPBllq/9kVGBKTjU0MDFPSUg1MDEzM0lKSki0MTC0szI0MUo2NLS1N7doXpTQEMjIUTPJhYWSAQBCflSEpJzE5m4EBADdjHoI=";
+    "007eJxTYFj39KqV+6+KtYcfaW/+V/nCy2S2j88x0Q5WKy/hjTevpZkpMCQmG5sYGKakpRqYGJiYpaUkJVsYmFpYmBsZpBobW1qarn23JqUhkJEhLTCPkZEBAkF8VoaknMTkbAYGAN0DILI=";
 const channel = "black";
 
 // 应用类
@@ -33,6 +33,7 @@ class MyApp extends StatefulWidget {
 
 // 应用状态类
 class _MyAppState extends State<MyApp> {
+  late final RtcEngineEventHandler _rtcEngineEventHandler;
   int? _remoteUid;
   bool _localUserJoined = false;
   late RtcEngine _engine;
@@ -95,7 +96,7 @@ class _MyAppState extends State<MyApp> {
         },
       ),
     );
-
+    print("步骤 1：启用插件");
     // 步骤 1：启用插件
     // On Android, you should load libAgoraFaceUnityExtension.so explicitly
     if (Platform.isAndroid) {
@@ -104,7 +105,10 @@ class _MyAppState extends State<MyApp> {
     await _engine.enableExtension(
         provider: "FaceUnity", extension: "Effect", enable: true);
 
+    // 初始化插件
     _initFUExtension();
+
+    // 设置美颜效果和人体识别
     _setupCatSparksEffect();
 
     // 开启视频
@@ -122,6 +126,7 @@ class _MyAppState extends State<MyApp> {
 
 // 步骤 2：初始化插件
   Future<void> _initFUExtension() async {
+    print("步骤 2：初始化插件");
     // 初始化
     await _engine.setExtensionProperty(
         provider: 'FaceUnity',
@@ -131,18 +136,6 @@ class _MyAppState extends State<MyApp> {
 
     // 加载 AI 模型
     final aiFaceProcessorPath =
-        await _copyAsset('Resource/animoji/cartoon_princess_Animoji.bundle');
-    await _engine.setExtensionProperty(
-        provider: 'FaceUnity',
-        extension: 'Effect',
-        key: 'fuLoadAIModelFromPackage',
-        // 通过 type 参数设置 AI 能力类型为 FUAITYPE_FACEPROCESSOR，对应取值为 1 << 8
-        value: jsonEncode({'data': aiFaceProcessorPath, 'type': 1 << 8}));
-  }
-
-// 步骤-3：设置美颜效果和人体识别
-  Future<void> _setupCatSparksEffect() async {
-    final aiFaceProcessorPath =
         await _copyAsset('Resource/model/ai_face_processor.bundle');
     await _engine.setExtensionProperty(
         provider: 'FaceUnity',
@@ -151,13 +144,80 @@ class _MyAppState extends State<MyApp> {
         // 通过 type 参数设置 AI 能力类型为 FUAITYPE_FACEPROCESSOR，对应取值为 1 << 8
         value: jsonEncode({'data': aiFaceProcessorPath, 'type': 1 << 8}));
 
-    // final catSparksPath =
-    //     await _copyAsset('Resource/items/ItemSticker/CatSparks.bundle');
-    // await _engine.setExtensionProperty(
+    // // 监听插件事件
+    // _rtcEngineEventHandler = RtcEngineEventHandler(
+    //   onExtensionEvent: (provider, extension, key, value) {
+    //     debugPrint(
+    //         '[onExtensionEvent] provider: $provider, extension: $extension, key: $key, value: $value');
+    //     if (provider == 'FaceUnity' && extension == 'Effect') {
+    //       try {
+    //         final jsonObject = jsonDecode(value);
+    //         if (key == 'fuIsTracking') {
+    //           final faces = jsonObject['faces'] as int?;
+    //           if (faces != null) {
+    //             // 处理正在跟踪的人脸数量
+    //             print('正在跟踪的人脸数量: $faces');
+    //           }
+    //         } else if (key == 'fuHandDetectorGetResultNumHands') {
+    //           final hands = jsonObject['hands'] as int?;
+    //           if (hands != null) {
+    //             // 处理手势数量
+    //             print('手势数量: $hands');
+    //           }
+    //         } else if (key == 'fuHumanProcessorGetNumResults') {
+    //           final people = jsonObject['people'] as int?;
+    //           if (people != null) {
+    //             // 处理人体数量
+    //             print('人体数量: $people');
+    //           }
+    //         }
+    //       } catch (e) {
+    //         print(e);
+    //       }
+    //     }
+    //   },
+    //   onExtensionStarted: (provider, extension) {
+    //     debugPrint(
+    //         '[onExtensionStarted] provider: $provider, extension: $extension');
+    //   },
+    //   onExtensionError: (provider, extension, error, message) {
+    //     debugPrint(
+    //         '[onExtensionError] provider: $provider, extension: $extension, error: $error, message: $message');
+    //   },
+    // );
+    // _engine.registerEventHandler(_rtcEngineEventHandler);
+
+    // void setExtensionJsonObject(String key, Map<String, dynamic> properties) {
+    //   final jsonObject = jsonEncode(properties);
+    //   _engine.setExtensionProperty(
     //     provider: 'FaceUnity',
     //     extension: 'Effect',
-    //     key: 'fuCreateItemFromPackage',
-    //     value: jsonEncode({'data': catSparksPath}));
+    //     key: key,
+    //     value: jsonObject,
+    //   );
+    // }
+
+    // Map<String, dynamic> map = {"enable": true};
+    // setExtensionJsonObject("fuIsTracking", map);
+    // // 注册回调函数
+    // await _engine.setExtensionProperty(
+    //   provider: 'FaceUnity',
+    //   extension: 'Effect',
+    //   key: 'fuIsTracking',
+    //   value: 'faces',
+    // );
+  }
+
+// 步骤-3：设置美颜效果和人体识别
+  Future<void> _setupCatSparksEffect() async {
+    print("步骤-3：设置美颜效果和人体识别");
+    final catSparksPath =
+        await _copyAsset('Resource/animoji/cartoon_princess_Animoji.bundle');
+    await _engine.setExtensionProperty(
+        provider: 'FaceUnity',
+        extension: 'Effect',
+        key: 'fuCreateItemFromPackage',
+        value: jsonEncode({'data': catSparksPath}));
   }
 
   Future<String> _copyAsset(String assetPath) async {
